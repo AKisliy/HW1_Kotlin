@@ -21,4 +21,8 @@ data class Movie(
         set(value) {
             duration = value
         }
+
+    override fun toString(): String {
+        return "${name} - ${description}, $duration min"
+    }
 }

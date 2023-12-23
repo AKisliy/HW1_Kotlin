@@ -1,1 +1,1 @@
-[]
+[{"visitor":{"name":"akfri ","card":439},"session":{"movie":{"title":"Fight club","description":"Movie, that make you think","duration":120},"start":"2023-12-23T13:15","end":"2023-12-23T15:15","reservedSeats":[false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]},"seatNumber":3,"id":1}]

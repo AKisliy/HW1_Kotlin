@@ -1,23 +1,33 @@
 import kotlinx.datetime.LocalDateTime
+import kotlin.properties.Delegates
 
 class CinemaManager(
     val movies: MutableList<Movie>,
     val sessions: MutableList<Session>,
     val cinemaHall: CinemaHall,
     var tickets: MutableList<Ticket>,
-    private val inputController: InputController,
-    private val outputController: OutputController
+    val inputController: InputController,
+    val outputController: OutputController,
+    val interactor: Interactor
 ){
+//    var movies: MutableList<Movie> by Delegates.observable(mutableListOf()){_,_,_ ->
+//        println("DA!!")
+//    }
+//    init {
+//        movies = _movies
+//    }
     fun sellTicket(){
         println("To buy the ticket please choose the session(choose the number of session):")
-        outputController.showAvailableSessions(sessions)
-        var session = inputController.getSession(sessions)
+        var session = interactor.getSession(sessions)
         while(session.isFull())
         {
             println("Sorry, there are no available seats for this session!")
             println("You can still pick another session from list")
-            session = inputController.getSession(sessions)
-            continue
+            if(interactor.askForRetry()){
+                session = inputController.getSession(sessions)
+                continue
+            }
+            return
         }
         println("Enter costumer's name")
         val name = readln()
@@ -38,7 +48,7 @@ class CinemaManager(
         println("Enter the unique ticket number:")
         var number = readln().toLongOrNull()
         while(true){
-            if(number == null || !tickets.any { it.id == number!! - 1 })
+            if(number == null || !tickets.any { it.id == number!! })
             {
                 println("No ticket with such number!! Try again:")
                 number = readln().toLongOrNull()
@@ -46,8 +56,10 @@ class CinemaManager(
             }
             break
         }
+        val ticket = tickets.first { it.id == number }
+        ticket.session.freeSeat(number?.toInt())
         tickets.removeIf { it.id == number }
-        println("Successfully refunded!!")
+        println("Successfully refunded to ${ticket.visitor.name} (card number: ${ticket.visitor.card})")
     }
 
     fun displaySeatStatus(){
@@ -116,13 +128,18 @@ class CinemaManager(
             }
             2->{
                 var changed = false
+                outputController.printWithColor(
+                    "This session's movie lasts ${session.movieDuration} minutes\n" +
+                            "You shouldn't make the session shorter than the movie\n" +
+                            "Otherwise, the information won't be updated",
+                    Colors.RED)
                 do {
                     println("Enter new start:(example: 2023-12-23T10:30)")
                     val newStart = inputController.getDateTime()
                     println("Enter new end: (example: 2023-12-23T10:30)")
                     val newEnd = inputController.getDateTime()
                     if(!checkSessionTime(session, newStart, newEnd) || !session.changeDuration(newStart, newEnd)){
-                        println("Can't change to this time")
+                        outputController.printWithColor("Can't change to this time", Colors.RED)
                         println("Do you want to try again? Y/N")
                         if(inputController.getUserApproval()){
                             continue

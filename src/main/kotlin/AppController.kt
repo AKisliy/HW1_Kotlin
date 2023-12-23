@@ -21,9 +21,45 @@ class AppController {
         content = file.readText()
         val cinemaHall = Json.decodeFromString<CinemaHall>(content)
         val output = OutputController()
+        val input = InputController()
         output.showMenu()
 
-        return CinemaManager(movies, sessions, cinemaHall, tickets,InputController(), output)
+        for(i in movies.indices){
+            for(j in sessions.indices){
+                if(movies[i].name == sessions[i].movieName)
+                    sessions[i].changeMovie(movies[i])
+            }
+        }
+        for(i in sessions.indices){
+            for(j in tickets.indices){
+                if(tickets[j].session.movieName == sessions[i].movieName)
+                    tickets[j].session = sessions[i];
+            }
+        }
+
+        return CinemaManager(movies, sessions, cinemaHall, tickets,input, output, Interactor(input, output))
+    }
+
+    fun appProccess(cinemaManager: CinemaManager){
+        while(true){
+            val choice = cinemaManager.inputController.getNumberIn(1, 5)
+            Runtime.getRuntime().exec("clear")
+            when(choice){
+                1-> cinemaManager.sellTicket()
+                2-> cinemaManager.refundTicket()
+                3-> cinemaManager.displaySeatStatus()
+                4-> cinemaManager.editMovieData()
+                5-> cinemaManager.editSessionData()
+            }
+            println("Return to menu? Y - yes, N - close app")
+            if(cinemaManager.inputController.getUserApproval())
+            {
+                Runtime.getRuntime().exec("clear")
+                cinemaManager.outputController.showMenu()
+                continue
+            }
+            break
+        }
     }
 
     fun finishApp(manager: CinemaManager){
