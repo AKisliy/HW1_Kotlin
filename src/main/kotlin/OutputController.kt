@@ -1,11 +1,11 @@
 class OutputController {
-    fun showAvailableSessions(sessions: MutableList<Session>){
+    fun showAvailableSessions(sessions: ObservableList<Session>){
         for(i in sessions.indices){
             println("${i + 1}) ${sessions[i]}")
         }
     }
 
-    fun showAvailableMovies(movies: MutableList<Movie>){
+    fun showAvailableMovies(movies: ObservableList<Movie>){
         for(i in movies.indices){
             println("${i + 1}) ${movies[i]}")
         }

@@ -4,19 +4,19 @@ class Interactor{
     private val outputController: OutputController = OutputController()
     private val inputController: InputController = InputController(::errorPrinter)
 
-    fun getSession(sessions: MutableList<Session>): Session{
+    fun getSession(sessions: ObservableList<Session>): Session{
         outputController.showAvailableSessions(sessions)
         return inputController.getSession(sessions)
     }
 
-    fun getMovie(movies: MutableList<Movie>): Movie{
+    fun getMovie(movies: ObservableList<Movie>): Movie{
         outputController.showAvailableMovies(movies)
         return inputController.getMovie(movies)
     }
 
     fun getMenuChoice(): Int{
         outputController.showMenu()
-        return getNumberIn(1, Constants.MENU_OPTIONS.value)
+        return getNumberInRange(1, Constants.MENU_OPTIONS.value)
     }
 
     fun getCreditCard(): Long{
@@ -26,12 +26,12 @@ class Interactor{
 
     fun getMovieEditingOptions():Int{
         outputController.showChangeMovieOption()
-        return inputController.getNumberIn(1,Constants.MOVIES_OPTIONS.value)
+        return inputController.getNumberInRange(1,Constants.MOVIES_OPTIONS.value)
     }
 
     fun getSessionEditingOptions():Int{
         outputController.showChangeSessionOption()
-        return inputController.getNumberIn(1,Constants.SESSION_OPTIONS.value)
+        return inputController.getNumberInRange(1,Constants.SESSION_OPTIONS.value)
     }
 
 
@@ -41,8 +41,8 @@ class Interactor{
         return inputController.getUserApproval()
     }
 
-    fun getNumberIn(start: Int, end: Int): Int{
-        return inputController.getNumberIn(start, end)
+    fun getNumberInRange(start: Int, end: Int): Int{
+        return inputController.getNumberInRange(start, end)
     }
 
     fun printWithColor(message: String, colors: Colors){
