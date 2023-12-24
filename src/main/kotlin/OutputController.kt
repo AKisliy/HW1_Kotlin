@@ -20,7 +20,7 @@ class OutputController {
         println("3 - Free seats at the session")
         println("4 - Edit movie data")
         println("5 - Edit session data")
-        println("(to exit press Esc)")
+        println("6 - Exit the program")
         resetColor()
     }
 
@@ -38,8 +38,8 @@ class OutputController {
     }
 
     fun printWithColor(string: String, color: Colors){
-        val reset = "\u001b[0m"
-        println(color.color + string + reset)
+        println(color.color + string)
+        resetColor()
     }
 
     private fun setColor(color: Colors){

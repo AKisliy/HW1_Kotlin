@@ -1,27 +1,13 @@
 import kotlinx.datetime.LocalDateTime
-import sun.jvm.hotspot.utilities.Observable
 
 class CinemaManager(
-    val movies: MutableList<Movie>,
-    val sessions: MutableList<Session>,
+    val movies: ObservableList<Movie>,
+    val sessions: ObservableList<Session>,
     val cinemaHall: CinemaHall,
-    var tickets: MutableList<Ticket>,
-    var test: ObservableList<Movie>,
+    var tickets: ObservableList<Ticket>,
     val interactor: Interactor
 ){
-//    var movies: MutableList<Movie> by Delegates.observable(mutableListOf()){_,_,_ ->
-//        println("DA!!")
-//    }
-//    init {
-//        movies = _movies
-//    }
     fun sellTicket(){
-        test.addObserver { o, arg -> println("soowi") }
-
-//        test.addObserver{_,_ ->
-//            println("Something changed")
-//        }
-        test.add(movies[0])
         println("To buy the ticket please choose the session(choose the number of session):")
         var session = interactor.getSession(sessions)
         while(session.isFull())
@@ -44,27 +30,18 @@ class CinemaManager(
             seat = readln().toIntOrNull()
         }
         val card = interactor.getCreditCard()
-        interactor.printWithColor("Ticket №${cinemaHall.ticketId + 1} was sold to $name", Colors.GREEN)
+        interactor.printWithColor("Ticket №${cinemaHall.ticketId} was sold to $name", Colors.GREEN)
         cinemaHall.ticketWasSold()
         tickets.add(Ticket(Visitor(name, card), session, seat!!, cinemaHall.ticketId))
+        sessions.saveChanges()
     }
 
     fun refundTicket(){
-        println("Enter the unique ticket number:")
-        var number = readln().toLongOrNull()
-        while(true){
-            if(number == null || !tickets.any { it.id == number!! })
-            {
-                println("No ticket with such number!! Try again:")
-                number = readln().toLongOrNull()
-                continue
-            }
-            break
-        }
-        val ticket = tickets.first { it.id == number }
-        ticket.session.freeSeat(number?.toInt())
-        tickets.removeIf { it.id == number }
+        val ticket = interactor.getTicketToRefund(tickets) ?: return
+        ticket.session.freeSeat(ticket.seatNumber)
+        tickets.removeIf { it.id == ticket.id }
         println("Successfully refunded to ${ticket.visitor.name} (card number: ${ticket.visitor.card})")
+        sessions.saveChanges()
     }
 
     fun displaySeatStatus(){
@@ -95,8 +72,6 @@ class CinemaManager(
                     if (newDuration == null || !checkMovieTime(movie, newDuration)) {
                         println("Can't change to this value.")
                         if (interactor.askForApproval("Would you like to try another duration?")) {
-//                        println("Enter new duration(in minutes)")
-//                        newDuration = readln().toIntOrNull()
                             continue
                         }
                         return
@@ -106,6 +81,8 @@ class CinemaManager(
                 movie.movieDuration = newDuration!!
             }
         }
+        movies.saveChanges()
+        sessions.saveChanges()
         interactor.printWithColor("Success!", Colors.GREEN)
     }
 
@@ -120,7 +97,6 @@ class CinemaManager(
                     val movie = interactor.getMovie(movies)
                     if(!session.changeMovie(movie)){
                         println("Can't change to this movie! The duration is too big")
-//                        println("Do you want to try again? Y/N")
                         if(interactor.askForApproval("Do you want to try again?")){
                             continue
                         }
@@ -153,6 +129,7 @@ class CinemaManager(
                 interactor.printWithColor("Session was successfully updated", Colors.GREEN)
             }
         }
+        sessions.saveChanges()
     }
 
     private fun checkSessionTime(session: Session, start: LocalDateTime, end: LocalDateTime): Boolean{

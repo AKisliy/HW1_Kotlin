@@ -14,6 +14,16 @@ class InputController(
         return movies[choice - 1]
     }
 
+    fun getTicket(tickets: MutableList<Ticket>): Ticket?{
+        val number = readln().toLongOrNull()
+        if(number == null || !tickets.any { it.id == number })
+        {
+            errorPrinter("No ticket with such number")
+            return null
+        }
+        return tickets.first { it.id == number }
+    }
+
     fun getCreditCard(): Long{
         var card = readln().toLongOrNull()
         while(card == null)
@@ -63,4 +73,6 @@ class InputController(
         }
         return date
     }
+
+
 }

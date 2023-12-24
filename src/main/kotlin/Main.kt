@@ -1,8 +1,10 @@
 fun main(args: Array<String>) {
     val appController = AppController()
+    // setup all data and start the app
     val manager = appController.startApp()
-    //manager.inputController.getUserApproval()
-    appController.appProccess(manager)
+    // main logic of app processing
+    appController.appProcess(manager)
+
     appController.finishApp(manager)
 }
 

@@ -4,22 +4,13 @@ import java.io.File
 import java.io.FileWriter
 
 class AppController {
+    private val filesController = FilesController()
+
     fun startApp(): CinemaManager{
-        var file = File("movies.txt")
-        var content = file.readText()
-        val movies = Json.decodeFromString<MutableList<Movie>>(content)
-
-        file = File("sessions.txt")
-        content = file.readText()
-        val sessions = Json.decodeFromString<MutableList<Session>>(content)
-
-        file = File("tickets.txt")
-        content = file.readText()
-        val tickets = Json.decodeFromString<MutableList<Ticket>>(content)
-
-        file = File("cinemaHall.txt")
-        content = file.readText()
-        val cinemaHall = Json.decodeFromString<CinemaHall>(content)
+        val movies = filesController.getData<MutableList<Movie>>("movies.txt")
+        val sessions = filesController.getData<MutableList<Session>>("sessions.txt")
+        val tickets = filesController.getData<MutableList<Ticket>>("tickets.txt")
+        val cinemaHall = filesController.getData<CinemaHall>("cinemaHall.txt")
 
         for(i in movies.indices){
             for(j in sessions.indices){
@@ -33,11 +24,18 @@ class AppController {
                     tickets[j].session = sessions[i];
             }
         }
+        val oMovies = ObservableList(movies)
+        val oSessions = ObservableList(sessions)
+        val oTickets = ObservableList(tickets)
+        oMovies.addObserver { _, _ -> filesController.saveChanges(movies, "movies.txt") }
+        oSessions.addObserver{ _, _ -> filesController.saveChanges(sessions, "sessions.txt")}
+        oTickets.addObserver{_, _ -> filesController.saveChanges(tickets, "tickets.txt")}
+        cinemaHall.addObserver{_,_ -> filesController.saveChanges(cinemaHall, "cinemaHall.txt")}
 
-        return CinemaManager(movies, sessions, cinemaHall, tickets,ObservableList(movies), Interactor())
+        return CinemaManager(oMovies, oSessions, cinemaHall, oTickets, Interactor())
     }
 
-    fun appProccess(cinemaManager: CinemaManager){
+    fun appProcess(cinemaManager: CinemaManager){
         var choice = cinemaManager.interactor.getMenuChoice()
         while(true){
             Runtime.getRuntime().exec("clear")
@@ -47,8 +45,8 @@ class AppController {
                 3-> cinemaManager.displaySeatStatus()
                 4-> cinemaManager.editMovieData()
                 5-> cinemaManager.editSessionData()
+                6-> return
             }
-            println("Now you can do other things, or close the app")
             if(cinemaManager.interactor.askForApproval("Return to menu?"))
             {
                 Runtime.getRuntime().exec("clear")
@@ -60,28 +58,10 @@ class AppController {
     }
 
     fun finishApp(manager: CinemaManager){
-        var jsonString = Json.encodeToString(manager.movies)
-        var file = File("movies.txt")
-        var writer = FileWriter(file)
-        writer.write(jsonString)
-        writer.close()
-
-        jsonString = Json.encodeToString(manager.cinemaHall)
-        file = File("cinemaHall.txt")
-        writer = FileWriter(file)
-        writer.write(jsonString)
-        writer.close()
-
-        jsonString = Json.encodeToString(manager.tickets)
-        file = File("tickets.txt")
-        writer = FileWriter(file)
-        writer.write(jsonString)
-        writer.close()
-
-        jsonString = Json.encodeToString(manager.sessions)
-        file = File("sessions.txt")
-        writer = FileWriter(file)
-        writer.write(jsonString)
-        writer.close()
+        manager.sessions.saveChanges()
+        manager.cinemaHall.notifyObservers()
+        manager.tickets.saveChanges()
+        manager.movies.saveChanges()
+        manager.interactor.printWithColor("Thank you for using!", Colors.BLUE)
     }
 }

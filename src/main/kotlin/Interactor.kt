@@ -1,6 +1,6 @@
 import kotlinx.datetime.LocalDateTime
 
-class Interactor(){
+class Interactor{
     private val outputController: OutputController = OutputController()
     private val inputController: InputController = InputController(::errorPrinter)
 
@@ -53,6 +53,23 @@ class Interactor(){
         println("(example: 2023-12-23T10:30)")
         return inputController.getDateTime()
     }
+
+    fun getTicketToRefund(tickets: ObservableList<Ticket>): Ticket?{
+        println("Enter the unique ticket number:")
+        var ticket = inputController.getTicket(tickets)
+        while(true){
+            if(ticket == null)
+            {
+                if(askForApproval("Try again?")) {
+                    ticket = inputController.getTicket(tickets)
+                    continue
+                }
+            }
+            break
+        }
+        return null
+    }
+
     private fun errorPrinter(message: String){
         outputController.printWithColor(message, Colors.RED)
     }

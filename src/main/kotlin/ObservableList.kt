@@ -1,10 +1,23 @@
-import sun.jvm.hotspot.utilities.Observable
+import java.util.Observable
+import java.util.function.Predicate
 
 class ObservableList<T>(private val wrapped: MutableList<T>): MutableList<T> by wrapped, Observable() {
-    val wrappedList: MutableList<T>
-        get() = wrapped
+    fun saveChanges(){
+        setChanged()
+        notifyObservers()
+    }
+
     override fun add(element: T): Boolean {
         if (wrapped.add(element)) {
+            setChanged()
+            notifyObservers()
+            return true
+        }
+        return false
+    }
+
+    override fun removeIf(filter: Predicate<in T>): Boolean {
+        if(wrapped.removeIf(filter)){
             setChanged()
             notifyObservers()
             return true
