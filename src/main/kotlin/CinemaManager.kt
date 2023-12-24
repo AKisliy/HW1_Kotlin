@@ -1,13 +1,10 @@
 import kotlinx.datetime.LocalDateTime
-import kotlin.properties.Delegates
 
 class CinemaManager(
     val movies: MutableList<Movie>,
     val sessions: MutableList<Session>,
     val cinemaHall: CinemaHall,
     var tickets: MutableList<Ticket>,
-    val inputController: InputController,
-    val outputController: OutputController,
     val interactor: Interactor
 ){
 //    var movies: MutableList<Movie> by Delegates.observable(mutableListOf()){_,_,_ ->
@@ -23,8 +20,8 @@ class CinemaManager(
         {
             println("Sorry, there are no available seats for this session!")
             println("You can still pick another session from list")
-            if(interactor.askForRetry()){
-                session = inputController.getSession(sessions)
+            if(interactor.askForApproval("Would you like to pick another session?")){
+                session = interactor.getSession(sessions)
                 continue
             }
             return
@@ -38,8 +35,8 @@ class CinemaManager(
             println("There's no such available seat. Try again:")
             seat = readln().toIntOrNull()
         }
-        val card = inputController.getCreditCard()
-        println("Ticket №${cinemaHall.ticketId + 1} was sold to $name")
+        val card = interactor.getCreditCard()
+        interactor.printWithColor("Ticket №${cinemaHall.ticketId + 1} was sold to $name", Colors.GREEN)
         cinemaHall.ticketWasSold()
         tickets.add(Ticket(Visitor(name, card), session, seat!!, cinemaHall.ticketId))
     }
@@ -64,93 +61,88 @@ class CinemaManager(
 
     fun displaySeatStatus(){
         println("To see available seats, please, choose the session:")
-        outputController.showAvailableSessions(sessions)
-        val session = inputController.getSession(sessions)
+        val session = interactor.getSession(sessions)
         println("Available seats:")
         println(session.getAvailableSeats())
     }
 
     fun editMovieData(){
         println("Please choose movie from the list to edit it:")
-        outputController.showAvailableMovies(movies)
-        val movie = inputController.getMovie(movies)
-        outputController.showChangeMovieOption()
-        val choice = inputController.getNumberIn(1,3)
+        val movie = interactor.getMovie(movies)
+        val choice = interactor.getMovieEditingOptions()
         when(choice){
             1 -> {
                 println("Enter new movie name:")
                 movie.name = readln()
-                println("Movie name successfully changed")
             }
             2 -> {
                 println("Enter new description:")
                 movie.shortDescription = readln()
-                println("Movie description successfully changed")
             }
             3 -> {
-                println("Enter new duration(in minutes):")
-                var newDuration = readln().toIntOrNull()
-                while(newDuration == null){
-                    println("Can't change to this value.)")
-                }
-                movie.movieDuration = newDuration
+                var newDuration: Int?
+                do {
+                    println("Enter new duration(in minutes):")
+                    newDuration = readln().toIntOrNull()
+                    if (newDuration == null || !checkMovieTime(movie, newDuration)) {
+                        println("Can't change to this value.")
+                        if (interactor.askForApproval("Would you like to try another duration?")) {
+//                        println("Enter new duration(in minutes)")
+//                        newDuration = readln().toIntOrNull()
+                            continue
+                        }
+                        return
+                    }
+                    break
+                } while(true)
+                movie.movieDuration = newDuration!!
             }
         }
+        interactor.printWithColor("Success!", Colors.GREEN)
     }
 
     fun editSessionData(){
         println("Please choose session to edit:")
-        outputController.showAvailableSessions(sessions)
-        val session = inputController.getSession(sessions)
-        outputController.showChangeSessionOption()
-        val choice = inputController.getNumberIn(1,2)
+        val session = interactor.getSession(sessions)
+        val choice = interactor.getSessionEditingOptions()
         when(choice){
             1->{
-                var changed = false
                 do{
                     println("Choose new movie for this session")
-                    outputController.showAvailableMovies(movies)
-                    val movie = inputController.getMovie(movies)
+                    val movie = interactor.getMovie(movies)
                     if(!session.changeMovie(movie)){
                         println("Can't change to this movie! The duration is too big")
-                        println("Do you want to try again? Y/N")
-                        if(inputController.getUserApproval()){
+//                        println("Do you want to try again? Y/N")
+                        if(interactor.askForApproval("Do you want to try again?")){
                             continue
                         }
-                        break
+                        return
                     }
-                    changed = true
                     break
                 } while(true)
-                if(changed){
-                    println("Session was successfully updated")
-                }
+                interactor.printWithColor("Session was successfully updated", Colors.GREEN)
             }
             2->{
-                var changed = false
-                outputController.printWithColor(
+                interactor.printWithColor(
                     "This session's movie lasts ${session.movieDuration} minutes\n" +
                             "You shouldn't make the session shorter than the movie\n" +
                             "Otherwise, the information won't be updated",
-                    Colors.RED)
+                    Colors.YELLOW)
                 do {
-                    println("Enter new start:(example: 2023-12-23T10:30)")
-                    val newStart = inputController.getDateTime()
-                    println("Enter new end: (example: 2023-12-23T10:30)")
-                    val newEnd = inputController.getDateTime()
+                    println("Enter new start:")
+                    val newStart = interactor.getDateTime()
+                    println("Enter new end:")
+                    val newEnd = interactor.getDateTime()
                     if(!checkSessionTime(session, newStart, newEnd) || !session.changeDuration(newStart, newEnd)){
-                        outputController.printWithColor("Can't change to this time", Colors.RED)
-                        println("Do you want to try again? Y/N")
-                        if(inputController.getUserApproval()){
+                        interactor.printWithColor("Can't change to this time", Colors.RED)
+                        if(interactor.askForApproval("Do you want to try another time?")){
                             continue
                         }
-                        break
+                        return
                     }
-                    changed = true
                     break
                 } while(true)
-                if(changed)
-                    println("Session was successfully updated")
+                interactor.printWithColor("Session was successfully updated", Colors.GREEN)
             }
         }
     }
@@ -164,6 +156,16 @@ class CinemaManager(
                 || (s.start <= session.start && s.end >= session.end))
             {
                 return false
+            }
+        }
+        return true
+    }
+
+    private fun checkMovieTime(movie: Movie, newDuration: Int): Boolean{
+        for(s in sessions){
+            if(s.movieName == movie.name){
+                if(s.durationInMinutes() < newDuration)
+                    return false
             }
         }
         return true

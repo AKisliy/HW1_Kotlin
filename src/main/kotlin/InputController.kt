@@ -1,40 +1,24 @@
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.LocalDateTime
 import java.lang.IllegalArgumentException
-
-class InputController {
+class InputController(
+    private val errorPrinter: (String) -> Unit
+) {
     fun getSession(sessions: MutableList<Session>): Session{
         val choice = getNumberIn(1, sessions.size)
-//        while(true) {
-//            if (choice == null || choice < 1 || choice > sessions.size) {
-//                println("Wrong session! Try again.")
-//                choice = readln().toIntOrNull()
-//                continue
-//            }
-//            break
-//        }
         return sessions[choice - 1]
     }
 
     fun getMovie(movies: MutableList<Movie>): Movie{
         val choice = getNumberIn(1, movies.size)
-//        while(true) {
-//            if (choice == null || choice < 1 || choice > movies.size) {
-//                println("Wrong movie index! Try again.")
-//                choice = readln().toIntOrNull()
-//                continue
-//            }
-//            break
-//        }
         return movies[choice - 1]
     }
 
     fun getCreditCard(): Long{
-        println("Please enter the customer's credit card:")
         var card = readln().toLongOrNull()
         while(card == null)
         {
-            println("The input isn't a valid credit card!! Try again:")
+            errorPrinter("The input isn't a valid credit card!! Try again:")
             card = readln().toLongOrNull()
         }
         return card
@@ -43,43 +27,16 @@ class InputController {
     fun getNumberIn(rangeStart: Int, rangeEnd: Int): Int{
         var choice = readln().toIntOrNull()
         while(choice == null || choice < rangeStart || choice > rangeEnd){
-            print("Wrong input! Try again:")
+            errorPrinter("Wrong input! Try again:")
             choice = readln().toIntOrNull()
         }
         return choice
     }
 
-//    fun movieChangeOption(): Int{
-//        println("Choose what you want to change:")
-//        println("1 - change name")
-//        println("2 - change description")
-//        println("3 - change duration")
-//        var choice = readln().toIntOrNull()
-//        while(choice == null || choice < 1 || choice > 3){
-//            println("Wrong input! Try again:")
-//            choice = readln().toIntOrNull()
-//        }
-//        return choice
-//    }
-//
-//    fun sessionChangeOption(): Int{
-//        println("Choose what you want to change:")
-//        println("1 - change movie")
-//        println("2 - change time")
-//        var choice = readln().toIntOrNull()
-//        while(choice == null || choice < 1 || choice > 2){
-//            println("Wrong input!! Try again:")
-//            choice = readln().toIntOrNull()
-//        }
-//        return choice
-//    }
-
     fun getUserApproval(): Boolean{
         var input = readlnOrNull()
-        //println(input!![0])
-        //while(input == null){
         while(input == null || (input[0] != 'Y' && input[0] != 'N')){
-            println("Unknown command. Try again!")
+            errorPrinter("Unknown command. Try again!")
             input = readlnOrNull()
         }
         return input[0] == 'Y'
@@ -90,7 +47,7 @@ class InputController {
         var date: LocalDateTime
         while(true){
             if(input == null){
-                println("Incorrect input!! Try again")
+                errorPrinter("Incorrect input!! Try again")
                 input = readlnOrNull()
                 continue
             }
@@ -99,7 +56,7 @@ class InputController {
                 break
             }
             catch (e: IllegalArgumentException){
-                println("Can't convert your input to valid date")
+                errorPrinter("Can't convert your input to valid date")
                 println("Try again!!")
                 input = readlnOrNull()
             }

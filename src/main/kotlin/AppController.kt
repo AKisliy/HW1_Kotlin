@@ -20,9 +20,6 @@ class AppController {
         file = File("cinemaHall.txt")
         content = file.readText()
         val cinemaHall = Json.decodeFromString<CinemaHall>(content)
-        val output = OutputController()
-        val input = InputController()
-        output.showMenu()
 
         for(i in movies.indices){
             for(j in sessions.indices){
@@ -37,12 +34,12 @@ class AppController {
             }
         }
 
-        return CinemaManager(movies, sessions, cinemaHall, tickets,input, output, Interactor(input, output))
+        return CinemaManager(movies, sessions, cinemaHall, tickets,Interactor())
     }
 
     fun appProccess(cinemaManager: CinemaManager){
+        var choice = cinemaManager.interactor.getMenuChoice()
         while(true){
-            val choice = cinemaManager.inputController.getNumberIn(1, 5)
             Runtime.getRuntime().exec("clear")
             when(choice){
                 1-> cinemaManager.sellTicket()
@@ -51,11 +48,11 @@ class AppController {
                 4-> cinemaManager.editMovieData()
                 5-> cinemaManager.editSessionData()
             }
-            println("Return to menu? Y - yes, N - close app")
-            if(cinemaManager.inputController.getUserApproval())
+            println("Now you can do other things, or close the app")
+            if(cinemaManager.interactor.askForApproval("Return to menu?"))
             {
                 Runtime.getRuntime().exec("clear")
-                cinemaManager.outputController.showMenu()
+                choice = cinemaManager.interactor.getMenuChoice()
                 continue
             }
             break
