@@ -4,17 +4,17 @@ import java.lang.IllegalArgumentException
 class InputController(
     private val errorPrinter: (String) -> Unit
 ) {
-    fun getSession(sessions: MutableList<Session>): Session{
-        val choice = getNumberIn(1, sessions.size)
+    fun getSession(sessions: ObservableList<Session>): Session{
+        val choice = getNumberInRange(1, sessions.size)
         return sessions[choice - 1]
     }
 
-    fun getMovie(movies: MutableList<Movie>): Movie{
-        val choice = getNumberIn(1, movies.size)
+    fun getMovie(movies: ObservableList<Movie>): Movie{
+        val choice = getNumberInRange(1, movies.size)
         return movies[choice - 1]
     }
 
-    fun getTicket(tickets: MutableList<Ticket>): Ticket?{
+    fun getTicket(tickets: ObservableList<Ticket>): Ticket?{
         val number = readln().toLongOrNull()
         if(number == null || !tickets.any { it.id == number })
         {
@@ -34,7 +34,7 @@ class InputController(
         return card
     }
 
-    fun getNumberIn(rangeStart: Int, rangeEnd: Int): Int{
+    fun getNumberInRange(rangeStart: Int, rangeEnd: Int): Int{
         var choice = readln().toIntOrNull()
         while(choice == null || choice < rangeStart || choice > rangeEnd){
             errorPrinter("Wrong input! Try again:")
@@ -73,6 +73,4 @@ class InputController(
         }
         return date
     }
-
-
 }

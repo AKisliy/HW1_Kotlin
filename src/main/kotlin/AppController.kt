@@ -7,10 +7,10 @@ class AppController {
     private val filesController = FilesController()
 
     fun startApp(): CinemaManager{
-        val movies = filesController.getData<MutableList<Movie>>("movies.txt")
-        val sessions = filesController.getData<MutableList<Session>>("sessions.txt")
-        val tickets = filesController.getData<MutableList<Ticket>>("tickets.txt")
-        val cinemaHall = filesController.getData<CinemaHall>("cinemaHall.txt")
+        val movies = filesController.getData<MutableList<Movie>>(FilePaths.MOVIES_FILE.path)
+        val sessions = filesController.getData<MutableList<Session>>(FilePaths.SESSIONS_FILE.path)
+        val tickets = filesController.getData<MutableList<Ticket>>(FilePaths.TICKETS_FILE.path)
+        val cinemaHall = filesController.getData<CinemaHall>(FilePaths.CINEMAHALL_FILE.path)
 
         for(i in movies.indices){
             for(j in sessions.indices){
@@ -27,10 +27,10 @@ class AppController {
         val oMovies = ObservableList(movies)
         val oSessions = ObservableList(sessions)
         val oTickets = ObservableList(tickets)
-        oMovies.addObserver { _, _ -> filesController.saveChanges(movies, "movies.txt") }
-        oSessions.addObserver{ _, _ -> filesController.saveChanges(sessions, "sessions.txt")}
-        oTickets.addObserver{_, _ -> filesController.saveChanges(tickets, "tickets.txt")}
-        cinemaHall.addObserver{_,_ -> filesController.saveChanges(cinemaHall, "cinemaHall.txt")}
+        oMovies.addObserver { _, _ -> filesController.saveChanges(movies, FilePaths.MOVIES_FILE.path) }
+        oSessions.addObserver{ _, _ -> filesController.saveChanges(sessions, FilePaths.SESSIONS_FILE.path)}
+        oTickets.addObserver{_, _ -> filesController.saveChanges(tickets, FilePaths.TICKETS_FILE.path)}
+        cinemaHall.addObserver{_,_ -> filesController.saveChanges(cinemaHall, FilePaths.CINEMAHALL_FILE.path)}
 
         return CinemaManager(oMovies, oSessions, cinemaHall, oTickets, Interactor())
     }
