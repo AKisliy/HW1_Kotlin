@@ -1,10 +1,12 @@
 import kotlinx.datetime.LocalDateTime
+import sun.jvm.hotspot.utilities.Observable
 
 class CinemaManager(
     val movies: MutableList<Movie>,
     val sessions: MutableList<Session>,
     val cinemaHall: CinemaHall,
     var tickets: MutableList<Ticket>,
+    var test: ObservableList<Movie>,
     val interactor: Interactor
 ){
 //    var movies: MutableList<Movie> by Delegates.observable(mutableListOf()){_,_,_ ->
@@ -14,6 +16,12 @@ class CinemaManager(
 //        movies = _movies
 //    }
     fun sellTicket(){
+        test.addObserver { o, arg -> println("soowi") }
+
+//        test.addObserver{_,_ ->
+//            println("Something changed")
+//        }
+        test.add(movies[0])
         println("To buy the ticket please choose the session(choose the number of session):")
         var session = interactor.getSession(sessions)
         while(session.isFull())

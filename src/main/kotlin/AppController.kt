@@ -34,7 +34,7 @@ class AppController {
             }
         }
 
-        return CinemaManager(movies, sessions, cinemaHall, tickets,Interactor())
+        return CinemaManager(movies, sessions, cinemaHall, tickets,ObservableList(movies), Interactor())
     }
 
     fun appProccess(cinemaManager: CinemaManager){
