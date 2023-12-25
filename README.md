@@ -40,6 +40,6 @@
 Данные хранятся в JSON файлах в папке data. Формат был выбран из-за доступности и удобства использования.
 ## Диаграммы
 Диаграмма классов
-![Image alt](https://github.com/AKisliy/HW1_Kotlin/blob/main/Kiselev_HW1_classes.drawio.png)
+![Image alt](https://github.com/AKisliy/HW1_Kotlin/blob/main/Kiselev_HW1_classes.drawio-2.png)
 Use-case диаграмма
 ![Image alt](https://github.com/AKisliy/HW1_Kotlin/blob/main/Kiselev_HW1_usecase.drawio-2.png)
