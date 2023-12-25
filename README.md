@@ -42,4 +42,4 @@
 Диаграмма классов
 ![Image alt](https://github.com/AKisliy/HW1_Kotlin/blob/main/Kiselev_HW1_classes.drawio.png)
 Use-case диаграмма
-![Image alt](https://github.com//AKisliy/HW1_Kotlin/blob/main/Kiselev_HW1_usecase.drawio-2.png)
+![Image alt](https://github.com/AKisliy/HW1_Kotlin/blob/main/Kiselev_HW1_usecase.drawio-2.png)
