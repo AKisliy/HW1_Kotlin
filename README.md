@@ -7,7 +7,7 @@
 3. Free seats at the session
 4. Edit movie data
 5. Edit session data
-6. Exit the program
+6. Exit the program\
 Для выбора режима необходимо ввести номер пункта от 1 до 6.
 Рассмотрим отдельной каждый пункт:
 ### Sell ticket
