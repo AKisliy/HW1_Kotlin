@@ -1,5 +1,7 @@
 import kotlinx.datetime.LocalDateTime
-
+/**
+ * Interactor - unions output and input controllers. Class is responsible for interaction with user.
+ */
 class Interactor{
     private val outputController: OutputController = OutputController()
     private val inputController: InputController = InputController(::errorPrinter)
@@ -34,7 +36,9 @@ class Interactor{
         return inputController.getNumberInRange(1,Constants.SESSION_OPTIONS.value)
     }
 
-
+    /**
+     * aslForApproval - function is used to get Y(Yes) or N(No) from user
+     */
     fun askForApproval(message: String): Boolean{
         println(message)
         println("Y/N")

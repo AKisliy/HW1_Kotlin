@@ -1,5 +1,7 @@
 import kotlinx.serialization.Serializable
-
+/**
+ * Ticket - represents the ticket object
+ */
 @Serializable
 data class Ticket(
     val visitor: Visitor,

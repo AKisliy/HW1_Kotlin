@@ -1,3 +1,6 @@
+/**
+ * FilePaths - перечисление, хранящее пути к файлам с сериализованной информацией
+ */
 enum class FilePaths(val path: String) {
     MOVIES_FILE("movies.txt"),
     SESSIONS_FILE("sessions.txt"),

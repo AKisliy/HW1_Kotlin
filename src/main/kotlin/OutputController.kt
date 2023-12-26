@@ -1,3 +1,6 @@
+/**
+ * OutputController - class which is responsible for printing information on console
+ */
 class OutputController {
     fun showAvailableSessions(sessions: ObservableList<Session>){
         for(i in sessions.indices){

@@ -1,6 +1,9 @@
 import java.util.Observable
 import java.util.function.Predicate
-
+/**
+ * ObservableList<T> - "обертка" над MutableList, которая позволяет отслеживать добавление и
+ * удаление элементов из листа
+ */
 class ObservableList<T>(private val wrapped: MutableList<T>): MutableList<T> by wrapped, Observable() {
     fun saveChanges(){
         setChanged()

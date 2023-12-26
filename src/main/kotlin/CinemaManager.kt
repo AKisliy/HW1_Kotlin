@@ -1,5 +1,13 @@
 import kotlinx.datetime.LocalDateTime
-
+/**
+ * CinemaManager - класс, отвечающий за основную логику работы менеджера кинотеатра
+ *
+ * @param movies - list of movies in cinema
+ * @param sessions - list of sessions in cinema
+ * @param cinemaHall - represents the hall in cinema
+ * @param tickets - list of sold tickets
+ * @param interactor - object, which is responsible for interaction with manager through the console
+ */
 class CinemaManager(
     val movies: ObservableList<Movie>,
     val sessions: ObservableList<Session>,
@@ -7,6 +15,9 @@ class CinemaManager(
     var tickets: ObservableList<Ticket>,
     val interactor: Interactor
 ){
+    /**
+     * sellTicket - function for selling tickets
+     */
     fun sellTicket(){
         println("To buy the ticket please choose the session(choose the number of session):")
         var session = interactor.getSession(sessions)
@@ -35,7 +46,9 @@ class CinemaManager(
         tickets.add(Ticket(Visitor(name, card), session, seat!!, cinemaHall.ticketId))
         sessions.saveChanges()
     }
-
+    /**
+     * refundTicket - function for refunding tickets
+     */
     fun refundTicket(){
         val ticket = interactor.getTicketToRefund(tickets) ?: return
         ticket.session.freeSeat(ticket.seatNumber)
@@ -43,14 +56,18 @@ class CinemaManager(
         println("Successfully refunded to ${ticket.visitor.name} (card number: ${ticket.visitor.card})")
         sessions.saveChanges()
     }
-
+    /**
+     * displaySeatStatus - displays free seats for concrete session(session is chosen by user)
+     */
     fun displaySeatStatus(){
         println("To see available seats, please, choose the session:")
         val session = interactor.getSession(sessions)
         println("Available seats:")
         println(session.getAvailableSeats())
     }
-
+    /**
+     * editMovieData - function for editing data of concrete movie(movie is chosen by user)
+     */
     fun editMovieData(){
         println("Please choose movie from the list to edit it:")
         val movie = interactor.getMovie(movies)
@@ -85,7 +102,9 @@ class CinemaManager(
         sessions.saveChanges()
         interactor.printWithColor("Success!", Colors.GREEN)
     }
-
+    /**
+     * editSessionData - function for editing data of concrete session(session is chosen by user)
+     */
     fun editSessionData(){
         println("Please choose session to edit:")
         val session = interactor.getSession(sessions)
@@ -131,21 +150,32 @@ class CinemaManager(
         }
         sessions.saveChanges()
     }
-
+    /**
+     * checkSessionTime - checks if session can be scheduled to start - end without intersecting other sessions
+     *
+     * @param session - session, which will have new schedule
+     * @param start - new start time
+     * @param end - new end time
+     */
     private fun checkSessionTime(session: Session, start: LocalDateTime, end: LocalDateTime): Boolean{
         for(s in sessions){
             if(s == session)
                 continue
-            if((s.start in session.start..session.end)
-                || (s.end in session.start..session.end)
-                || (s.start <= session.start && s.end >= session.end))
+            if((s.start in start..end)
+                || (s.end in start..end)
+                || (s.start <= start && s.end >= end))
             {
                 return false
             }
         }
         return true
     }
-
+    /**
+     * checkMovieTime - check if the movie will suit all session with new duration
+     *
+     * @param movie - the movie that will have new duration
+     * @param newDuration - new duration of movie
+     */
     private fun checkMovieTime(movie: Movie, newDuration: Int): Boolean{
         for(s in sessions){
             if(s.movieName == movie.name){

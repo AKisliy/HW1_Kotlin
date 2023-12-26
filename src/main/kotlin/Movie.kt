@@ -1,5 +1,7 @@
 import kotlinx.serialization.Serializable
-
+/**
+ * Movie - represents the movie object with title, description and duration
+ */
 @Serializable
 data class Movie(
     private var title: String,

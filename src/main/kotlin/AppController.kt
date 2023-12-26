@@ -1,11 +1,11 @@
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.io.File
-import java.io.FileWriter
-
+/**
+ * AppController - class which is responsible for main app's stages: start, processing and finish
+ */
 class AppController {
     private val filesController = FilesController()
-
+    /**
+     * startApp - starts the app. Take all the information from JSON files and returns CinemaManager with proper lists
+     */
     fun startApp(): CinemaManager{
         val movies = filesController.getData<MutableList<Movie>>(FilePaths.MOVIES_FILE.path)
         val sessions = filesController.getData<MutableList<Session>>(FilePaths.SESSIONS_FILE.path)
@@ -34,7 +34,9 @@ class AppController {
 
         return CinemaManager(oMovies, oSessions, cinemaHall, oTickets, Interactor())
     }
-
+    /**
+     * appProcess - processing the app
+     */
     fun appProcess(cinemaManager: CinemaManager){
         var choice = cinemaManager.interactor.getMenuChoice()
         while(true){
@@ -56,7 +58,9 @@ class AppController {
             break
         }
     }
-
+    /**
+     * finishApp - saves all manager information in files and finish the app
+     */
     fun finishApp(manager: CinemaManager){
         manager.sessions.saveChanges()
         manager.cinemaHall.notifyObservers()

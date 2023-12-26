@@ -2,20 +2,30 @@ import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-
+/**
+ * Session - represents the session object
+ */
 @Serializable
 data class Session(
     private var movie: Movie,
-    var start: LocalDateTime,
-    var end: LocalDateTime,
+    private var _start: LocalDateTime,
+    private var _end: LocalDateTime,
     private val reservedSeats: Array<Boolean>
 ){
+    val start: LocalDateTime
+        get() = _start
+
+    val end: LocalDateTime
+        get() = _end
+
     val movieName: String
         get() = movie.name
 
     val movieDuration: Int
         get() = movie.movieDuration
-
+    /**
+     * getAvailableSeats - returns string with numbers of free seats
+     */
     fun getAvailableSeats(): String{
         val stringBuilder = StringBuilder()
         for(i in reservedSeats.indices) {
@@ -45,7 +55,9 @@ data class Session(
         reservedSeats[seat - 1] = false
         return true
     }
-
+    /**
+     * ifFull - returns if all the seats are reserved
+     */
     fun isFull(): Boolean{
         return reservedSeats.all { it }
     }
@@ -53,15 +65,19 @@ data class Session(
     fun durationInMinutes(): Int{
         return (end.toInstant(TimeZone.currentSystemDefault()) - start.toInstant(TimeZone.currentSystemDefault())).inWholeMinutes.toInt()
     }
-
+    /**
+     * changeDuration - function tries to set new start and end to session. If setting was successful returns true. Otherwise - false
+     * @param start - new session start
+     * @param end - new session end
+     */
     fun changeDuration(start: LocalDateTime, end: LocalDateTime): Boolean{
         val tempStart = this.start
         val tempEnd = this.end
-        this.start = start
-        this.end = end
+        this._start = start
+        this._end = end
         if(durationInMinutes() < movie.movieDuration){
-            this.start = tempStart
-            this.end = tempEnd
+            this._start = tempStart
+            this._end = tempEnd
             return false
         }
         return true

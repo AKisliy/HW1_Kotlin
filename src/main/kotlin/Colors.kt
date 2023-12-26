@@ -1,3 +1,6 @@
+/**
+ * Colors - enum which represents different colors for printing on console
+ */
 enum class Colors(val color: String){
     RED("\u001b[31m"),
     BLUE("\u001B[34m"),

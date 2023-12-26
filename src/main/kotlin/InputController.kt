@@ -1,6 +1,11 @@
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.LocalDateTime
 import java.lang.IllegalArgumentException
+/**
+ * InputController - class which is responsible for getting user input from console
+ *
+ * @param errorPrinter - function which is called with when user did something wrong
+ */
 class InputController(
     private val errorPrinter: (String) -> Unit
 ) {
