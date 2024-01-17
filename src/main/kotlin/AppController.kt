@@ -21,7 +21,7 @@ class AppController {
         for(i in sessions.indices){
             for(j in tickets.indices){
                 if(tickets[j].session.movieName == sessions[i].movieName)
-                    tickets[j].session = sessions[i];
+                    tickets[j].session = sessions[i]
             }
         }
         val oMovies = ObservableList(movies)
@@ -40,7 +40,6 @@ class AppController {
     fun appProcess(cinemaManager: CinemaManager){
         var choice = cinemaManager.interactor.getMenuChoice()
         while(true){
-            Runtime.getRuntime().exec("clear")
             when(choice){
                 1-> cinemaManager.sellTicket()
                 2-> cinemaManager.refundTicket()
@@ -51,7 +50,6 @@ class AppController {
             }
             if(cinemaManager.interactor.askForApproval("Return to menu?"))
             {
-                Runtime.getRuntime().exec("clear")
                 choice = cinemaManager.interactor.getMenuChoice()
                 continue
             }
